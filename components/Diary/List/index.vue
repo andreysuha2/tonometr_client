@@ -39,3 +39,24 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
         return accList;
     }, []));
 </script>
+
+<style lang="scss" scoped>
+.diary {
+    // vars
+    --max-width: 500px;
+    --border: 1px solid #000;
+    --item-gorizontal-paddings: 10px;
+    --item-vertical-paddings: 5px;
+
+    // styles
+    max-width: var(--max-width);
+    width: 100%;
+    margin: 0 auto;
+
+    &--list {
+        border: var(--border);
+        border-radius: 5px;
+        overflow: hidden;
+    }
+}
+</style>

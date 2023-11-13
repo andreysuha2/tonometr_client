@@ -28,6 +28,11 @@
     &-no-wrap {
         flex-wrap: nowrap!important;
     }
+
+    &-center {
+        justify-content: center;
+        align-items: center;
+    }
 }
 
 .justify {

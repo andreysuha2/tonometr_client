@@ -3,6 +3,7 @@
         <div class="base-container">
             <DiaryList v-if="diaryStore.list" :list="diaryStore.list"/>   
         </div>
+        <DiaryDialog/>
     </div>
 </template>
 
@@ -12,6 +13,7 @@ export default { name: "MainPage" };
 
 <script lang="ts" setup>
 import DiaryList from '~/components/Diary/List/index.vue';
+import DiaryDialog from '~/components/Diary/Modals/index.vue';
 import useDiaryStore from '~/store/diary';
 
 const diaryStore = useDiaryStore();
