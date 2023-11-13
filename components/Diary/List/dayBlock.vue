@@ -6,7 +6,7 @@
                 <span>{{ date }}</span>
             </div>
             <v-btn prepend-icon="mdi-plus"
-                @click="startRecordCreation" 
+                @click="startRecordCreation(date)" 
                 class="diary-day-block--add-new-btn">додати запис</v-btn>
         </div>
         <div class="diary-day-block--body">
@@ -24,23 +24,11 @@ export default { name: 'DiaryDayBlock' };
 <script lang="ts" setup>
 import type { DiaryDayBlock } from '~/assets/types/diary';
 import ListItem from "./item.vue";
-import useDiaryStore from "~/store/diary";
+import { useDiary } from "~/composable/diary";
 
 const props = defineProps<DiaryDayBlock>(),
     { date } = toRefs(props),
-    store = useDiaryStore(),
-    startRecordCreation = () => {
-        const now = new Date(),
-            usedDate = new Date(date.value);
-        usedDate.setHours(now.getHours());
-        usedDate.setMinutes(now.getMinutes());
-        store.useDialog({
-            title: "Додати запис",
-            date: usedDate
-        });
-    };
-
-
+    { startRecordCreation } = useDiary();
 </script>
 
 <style lang="scss" scoped>

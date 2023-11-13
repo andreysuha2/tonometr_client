@@ -1,9 +1,17 @@
 <template>
     <div class="diary">
-        <div class="diary--list">
+        <div v-if="filterList.length" class="diary--list">
             <DayBlock v-for="item in filterList"
                 :key="item.date"
                 v-bind="item"/>    
+        </div>
+        <div class="diary--empty">
+            <span>Записів не знайдено</span>
+        </div>
+        <div class="diary--add">
+            <v-btn @click="startRecordCreation" prepend-icon="mdi-plus">
+                додати запис
+            </v-btn>
         </div>
     </div>
 </template>
@@ -15,6 +23,7 @@ export default { name: "DiaryListComponent" };
 <script lang="ts" setup>
 // import types
 import type { DiaryRecord, DiaryDayBlock } from '~/assets/types/diary';
+import { useDiary } from '~/composable/diary';
 
 // import components
 import DayBlock from './dayBlock.vue';
@@ -37,7 +46,8 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
         }
         block.list.push(item);
         return accList;
-    }, []));
+    }, [])),
+    { startRecordCreation } = useDiary();
 </script>
 
 <style lang="scss" scoped>
@@ -57,6 +67,16 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
         border: var(--border);
         border-radius: 5px;
         overflow: hidden;
+    }
+
+    &--empty {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    &--add {
+        margin-top: 10px;
+        text-align: center;
     }
 }
 </style>
