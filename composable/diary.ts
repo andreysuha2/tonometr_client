@@ -27,7 +27,7 @@ export const useDiary = () => {
         useRecordDialog = ({ date = null, record = undefined, type = 'create' }: DiaryRecordDialog = {}) => {
             const now = new Date(),
                 usedDate = date ? new Date(date) : now;
-            if(date) {
+            if(date && type === 'create') {
                 usedDate.setHours(now.getHours());
                 usedDate.setMinutes(now.getMinutes());
             }
@@ -41,10 +41,8 @@ export const useDiary = () => {
 
         updateDateTime = (date: Date, time: string) => {
             const [ h, m ] = time.split(":");
-            console.log("start", date);
             date.setHours(Number(h));
             date.setMinutes(Number(m));
-            console.log("end", date);
             return date;
         },
 

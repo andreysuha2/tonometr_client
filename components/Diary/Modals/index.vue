@@ -9,7 +9,7 @@
                 color="primary"
             ></v-progress-circular>
         </div>
-        <v-card v-if="record" :title="title">
+        <v-card v-if="dialog.record" :title="title">
             <v-card-text>
                 <v-container>
                     <v-row>
@@ -48,19 +48,19 @@
                                 hint="Верхній"
                                 persistent-hint
                                 prepend-icon="mdi-arrow-top-right" 
-                                v-model="record.pressure.high" label="Тиск"/>
+                                v-model="dialog.record.pressure.high" label="Тиск"/>
                         </v-col>
                         <v-col>
                             <v-text-field
                                 hint="Нижній"
                                 persistent-hint
                                 prepend-icon="mdi-arrow-bottom-right"
-                                v-model="record.pressure.lower" label="Тиск"/>
+                                v-model="dialog.record.pressure.lower" label="Тиск"/>
                         </v-col>
                         <v-col>
                             <v-text-field
                                 prepend-icon="mdi-pulse"
-                                v-model="record.pulse" label="Пульс"/>
+                                v-model="dialog.record.pulse" label="Пульс"/>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -71,7 +71,7 @@
                     color="blue"
                     variant="text"
                     @click="addRecord"
-                    v-if="type === 'create'"
+                    v-if="dialog.type === 'create'"
                 >
                     Додати
                 </v-btn>
@@ -79,15 +79,15 @@
                     color="blue"
                     variant="text"
                     @click="setRecord"
-                    v-if="type === 'update'"
+                    v-if="dialog.type === 'update'"
                 >
-                    Онвити
+                    Оновити
                 </v-btn>
                 <v-btn
                     color="blue"
                     variant="text"
                     @click="removeRecord"
-                    v-if="type === 'update'"
+                    v-if="dialog.type === 'update'"
                 >
                     Видалити
                 </v-btn>
@@ -111,12 +111,12 @@ export default { name: 'DiaryDialog' };
 import { useDiary } from '~/composable/diary';
 import type { DiaryRecord } from '~/composable/diary';
 
-console.log('created');
-
 const { store, updateDateTime, createRecord, updateRecord, deleteRecord } = useDiary(),
     onUpdateDialog = (val: boolean) => { if(!val) store.skipDialog() },
     useLoader = ref(false),
     isOpenDate = ref(false),
+    { dialog } = storeToRefs(store),
+    title = computed(() => dialog.value.title),
     isOpenDialog = computed({
         get() { return store.dialog.open; },
         set(val = true) { store.openDialog(val); } 
@@ -132,12 +132,11 @@ const { store, updateDateTime, createRecord, updateRecord, deleteRecord } = useD
         },
         set(val: string) { store.dialog.date = updateDateTime(structuredClone(date.value), val); }
     }),
-    { dialog } = toRefs(store),
-    { title, record, type } = toRefs(dialog.value),
-    withRecord = (handler: (record: DiaryRecord) => Promise<any>) => {
-        if(record?.value) {
+    withRecord = (handler: (r: DiaryRecord) => Promise<any>) => {
+        const record: DiaryRecord | undefined = dialog.value.record;
+        if(record) {
             useLoader.value = true;
-            return handler(record.value).then(() => {
+            return handler(record).then(() => {
                 store.skipDialog();
                 isOpenDialog.value = false;
             }).catch(e => console.log(e))
