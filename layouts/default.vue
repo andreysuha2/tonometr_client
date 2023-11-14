@@ -1,5 +1,6 @@
 <template>
     <div class="app">
+        <div id="aletrs" class="app--alerts"></div>
         <div class="app--content">
             <AppHeader class="app--header"/>
             <div class="app--main">
@@ -23,6 +24,12 @@ import { AppHeader, AppFooter } from "#components";
     min-height: 100%;
     display: grid;
     grid-template-rows: 1fr auto;
+    position: relative;
+
+    &--alerts {
+        position: fixed;
+        top: 0;
+    }
 
     &--main {
         margin-top: 20px;

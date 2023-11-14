@@ -3,10 +3,10 @@
         <div class="diary-day-block--header flex justify-between items-center">
             <div class="flex items-center">
                 <v-icon icon="mdi-calendar"/>
-                <span>{{ date }}</span>
+                <span>{{ dateObj.toLocaleDateString() }}</span>
             </div>
             <v-btn prepend-icon="mdi-plus"
-                @click="startRecordCreation(date)" 
+                @click="useRecordDialog({ date })" 
                 class="diary-day-block--add-new-btn">додати запис</v-btn>
         </div>
         <div class="diary-day-block--body">
@@ -22,13 +22,14 @@ export default { name: 'DiaryDayBlock' };
 </script>
 
 <script lang="ts" setup>
-import type { DiaryDayBlock } from '~/assets/types/diary';
+import type { DiaryDayBlock } from '~/composable/diary';
 import ListItem from "./item.vue";
 import { useDiary } from "~/composable/diary";
 
 const props = defineProps<DiaryDayBlock>(),
     { date } = toRefs(props),
-    { startRecordCreation } = useDiary();
+    { useRecordDialog } = useDiary(),
+    dateObj = new Date(date.value);
 </script>
 
 <style lang="scss" scoped>
@@ -51,6 +52,10 @@ const props = defineProps<DiaryDayBlock>(),
         // styles
         text-transform: none;
         font-weight: bold;
+    }
+
+    &:not(:first-child) {
+        border-top: var(--border);
     }
 }
 </style>

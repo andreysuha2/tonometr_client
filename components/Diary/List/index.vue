@@ -5,11 +5,11 @@
                 :key="item.date"
                 v-bind="item"/>    
         </div>
-        <div class="diary--empty">
+        <div v-else class="diary--empty">
             <span>Записів не знайдено</span>
         </div>
         <div class="diary--add">
-            <v-btn @click="startRecordCreation" prepend-icon="mdi-plus">
+            <v-btn @click="useRecordDialog()" prepend-icon="mdi-plus">
                 додати запис
             </v-btn>
         </div>
@@ -22,7 +22,7 @@ export default { name: "DiaryListComponent" };
 
 <script lang="ts" setup>
 // import types
-import type { DiaryRecord, DiaryDayBlock } from '~/assets/types/diary';
+import type { DiaryRecord, DiaryDayBlock } from '~/composable/diary';
 import { useDiary } from '~/composable/diary';
 
 // import components
@@ -38,7 +38,7 @@ interface Props { list: Array<DiaryRecord> };
 const props = withDefaults(defineProps<Props>(), { list: () => [] }),
     { list } = toRefs(props), 
     filterList = computed(() => list.value.reduce((accList: DiaryDayBlock[], item: DiaryRecord) => {
-        const date = moment(item.timestamp).format('DD-M-YYYY');
+        const date = moment(item.timestamp).format('M-DD-YYYY');
         let block: DiaryDayBlock | undefined = accList.find(({ date: blockDate }) => blockDate === date);
         if(!block) {
             block = { date, list: [] };
@@ -47,7 +47,7 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
         block.list.push(item);
         return accList;
     }, [])),
-    { startRecordCreation } = useDiary();
+    { useRecordDialog } = useDiary();
 </script>
 
 <style lang="scss" scoped>

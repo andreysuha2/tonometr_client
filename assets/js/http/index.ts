@@ -34,7 +34,7 @@ class Http {
 
     constructor({ baseURL, headers = {}, config = {} }: HttpArgs) {
         this.baseURL = !baseURL.startsWith("http://") && !baseURL.startsWith("https://") ? `https://${baseURL}` : baseURL;
-        this.headers = headers;
+        this.headers = { 'Content-type': 'application/json', ...headers };
         this.config = config;
     }
 
@@ -45,17 +45,15 @@ class Http {
             requestConfig: { [key: string]: any } = { method, headers: { ...this.headers, ...headers }, ...this.config, ...config };
             if(!likeGET.includes(method)) {
                 const requestData = data instanceof FormData ? data : JSON.stringify(data);
-                requestConfig.data = requestData;
+                requestConfig.body = requestData;
             }
         return new Promise((resolve, reject) => {
-            fetch(url, requestConfig).then(response => {
-                if(!response.ok) {
-                    return reject({ status: response.status, message: response.statusText });
-                }
-                return response.json();
-            })
-            .then(result => resolve(result))
-            .catch(e => reject(e));
+            fetch(url, requestConfig).then(async (response) => {
+                const result = await response.json(),
+                    res = { ...response, status: response.status, headers: response.headers, body: result };
+                if(!response.ok) return reject(res);
+                resolve(res);
+            }).catch(e => reject(e));
         });
     }
 

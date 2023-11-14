@@ -18,3 +18,9 @@ import useDiaryStore from '~/store/diary';
 
 const diaryStore = useDiaryStore();
 </script>
+
+<style lang="scss" scoped>
+.main-page {
+    padding-bottom: 20px;
+}
+</style>

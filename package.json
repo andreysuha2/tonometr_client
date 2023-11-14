@@ -24,6 +24,7 @@
     "@pinia/nuxt": "^0.5.1",
     "moment": "^2.29.4",
     "normalize-scss": "^7.0.1",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "vee-validate": "^4.11.8"
   }
 }

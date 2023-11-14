@@ -1,5 +1,5 @@
 <template>
-    <div class="diary-list-item flex justify-between">
+    <div class="diary-list-item flex justify-between" @click="useRecordDialog(dialogData)">
         <div class="diary-list-item--cell diary-list-item--cell__time">
             <v-icon class="diary-list-item--cell-icon" icon="mdi-clock-outline"/>
             <span>{{ time }}</span>
@@ -25,14 +25,23 @@ export default { name: "DiaryListItem" }
 
 <script lang="ts" setup>
 // import types
-import type { DiaryRecord } from '~/assets/types/diary';
+import type { DiaryRecord, DiaryRecordDialog } from '~/composable/diary';
+
+// import composable
+import { useDiary } from '~/composable/diary';
 
 // import libs
 import moment from 'moment';
 
 const props = defineProps<DiaryRecord>(),
-    { timestamp, pressure, pulse } = toRefs(props),
-    time = computed(() => moment(timestamp.value).format("HH:mm"));
+    { timestamp, pressure, pulse, id } = toRefs(props),
+    time = computed(() => moment(timestamp?.value).format("HH:mm")),
+    dialogData: DiaryRecordDialog = {
+        date: timestamp?.value?.toLocaleString() || new Date().toLocaleDateString(),
+        record: { id: id?.value, pressure: pressure.value, pulse: pulse.value },
+        type: 'update'
+    },
+    { useRecordDialog } = useDiary();
 </script>
 
 <style lang="scss" scoped>
