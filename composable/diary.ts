@@ -1,4 +1,3 @@
-import type { EnumType } from "typescript";
 import useDiaryStore from "~/store/diary";
 
 export interface DiaryRecord {
@@ -48,63 +47,38 @@ export const useDiary = () => {
 
         createRecord = (date: Date, record: DiaryRecord) => {
             return new Promise(async (resolve, reject) => {
-                try {
-                    const { data, error } = await useFetch('/api/diary/record', {
-                        method: "POST",
-                        body: { timestamp: date.toISOString(), ...record }
-                    });
-
-                    console.log(data);
-
-                    if(data.value) {
-                        store.list.push(data.value);
-                        return resolve(data.value);
-                    }
-
-                    if(error.value) reject(error.value);
-                } catch (e) {
-                    reject(e);
-                }
+                $fetch('/api/diary/record', {
+                    method: "POST",
+                    body: { timestamp: date.toISOString(), ...record }
+                }).then(data => {
+                    store.list.push(data);
+                    return resolve(data);
+                }).catch(e => reject(e));
             });
         },
 
         updateRecord = (date: Date, record: DiaryRecord) => {
             return new Promise(async (resolve, reject) => {
-                try {
-                    const { data, error } = await useFetch(`/api/diary/record/${record.id}`, {
-                        method: 'PUT',
-                        body: { timestamp: date.toISOString(), ...record }
-                    });
-
-                    if(data.value) {
-                        const recordIndex = store.list.findIndex(({ id }: DiaryRecord) => data.value.id === id);
-                        store.list[recordIndex] = data.value;
-                        return resolve(data.value);
-                    }
-
-                    if(error.value) reject(error.value);
-                } catch (e) {
-                    reject(e);
-                }
-            })
+                $fetch(`/api/diary/record/${record.id}`, {
+                    method: 'PUT',
+                    body: { timestamp: date.toISOString(), ...record }
+                }).then(data => {
+                    const recordIndex = store.list.findIndex(({ id }: DiaryRecord) => data.id === id);
+                    if(recordIndex !== -1) store.list[recordIndex] = data;
+                    return resolve(data);
+                }).catch(e => reject(e));
+            });
         },
 
         deleteRecord = (record: DiaryRecord) => {
             return new Promise(async (resolve, reject) => {
-                try {
-                    const { data, error } = await useFetch(`/api/diary/record/${record.id}`, { method: 'DELETE' });
-
-                    if(data.value) {
-                        const recordIndex = store.list.findIndex(({ id }: DiaryRecord) => data.value.id === id);
-                        store.list.splice(recordIndex, 1);
-                        return resolve(data.value);
-                    }
-
-                    if(error.value) reject(error.value);
-                } catch (e) {
-                    reject(e);
-                }
-            })
+                $fetch(`/api/diary/record/${record.id}`, { method: 'DELETE' })
+                    .then(() => {
+                        const recordIndex = store.list.findIndex(({ id }: DiaryRecord) => record.id === id);
+                        if(recordIndex !== -1) store.list.splice(recordIndex, 1);
+                        return resolve(record);
+                    }).catch(e => reject(e));
+            });
         }
 
 

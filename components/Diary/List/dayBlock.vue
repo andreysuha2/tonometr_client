@@ -10,7 +10,7 @@
                 class="diary-day-block--add-new-btn">додати запис</v-btn>
         </div>
         <div class="diary-day-block--body">
-            <ListItem v-for="item in list"
+            <ListItem v-for="item in sortedList"
                 :key="item.id"
                 v-bind="item"/>
         </div>
@@ -27,8 +27,13 @@ import ListItem from "./item.vue";
 import { useDiary } from "~/composable/diary";
 
 const props = defineProps<DiaryDayBlock>(),
-    { date } = toRefs(props),
+    { date, list } = toRefs(props),
     { useRecordDialog } = useDiary(),
+    sortedList = computed(() => {
+        return [ ...list.value ].sort((a, b) => {
+            return new Date(a.timestamp || '').getTime() - new Date(b.timestamp || '').getTime()
+        });
+    }),
     dateObj = new Date(date.value);
 </script>
 

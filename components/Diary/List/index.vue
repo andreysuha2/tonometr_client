@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
         }
         block.list.push(item);
         return accList;
-    }, [])),
+    }, []).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())),
     { useRecordDialog } = useDiary();
 </script>
 

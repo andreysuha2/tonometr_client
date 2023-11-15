@@ -27,6 +27,8 @@ type GroupHandler = (
     group?: (slug: string, h: GroupHandler) => ({ [key: string]: any })
 ) => ({ [ key: string ]: any })
 
+
+
 class Http {
     protected baseURL: string;
     protected headers: object;
@@ -38,15 +40,26 @@ class Http {
         this.config = config;
     }
 
+    static filterSlashes(url: string) {
+        console.log(url);
+        const [ protocol, domain ] = url.split("://"),
+            domainParts = domain.split('/'),
+            lastElm = domain.slice(-1)[0] === '/' ? "/" : "",
+            domainFiltredParts = domainParts.filter(part => part);
+        console.log(domainParts, lastElm, domainFiltredParts);
+        return `${protocol}://${domainFiltredParts.join('/')}${lastElm}`  
+    }
+
     public request(slug: string = '', { method = Methods.GET, data = {}, headers = {}, config = {} }: RequestData) {
         const likeGET = [ Methods.GET, Methods.HEAD ],
-            baseURL = `${this.baseURL}/${slug}`,
+            baseURL = Http.filterSlashes(`${this.baseURL}/${slug}`),
             url: string = likeGET.includes(method) ? `${baseURL}?${ data instanceof FormData ? {} : new URLSearchParams(data).toString()}` : baseURL,
             requestConfig: { [key: string]: any } = { method, headers: { ...this.headers, ...headers }, ...this.config, ...config };
             if(!likeGET.includes(method)) {
                 const requestData = data instanceof FormData ? data : JSON.stringify(data);
                 requestConfig.body = requestData;
             }
+            console.log(baseURL);
         return new Promise((resolve, reject) => {
             fetch(url, requestConfig).then(async (response) => {
                 const result = await response.json(),
