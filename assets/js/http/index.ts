@@ -41,25 +41,22 @@ class Http {
     }
 
     static filterSlashes(url: string) {
-        console.log(url);
         const [ protocol, domain ] = url.split("://"),
             domainParts = domain.split('/'),
             lastElm = domain.slice(-1)[0] === '/' ? "/" : "",
             domainFiltredParts = domainParts.filter(part => part);
-        console.log(domainParts, lastElm, domainFiltredParts);
         return `${protocol}://${domainFiltredParts.join('/')}${lastElm}`  
     }
 
     public request(slug: string = '', { method = Methods.GET, data = {}, headers = {}, config = {} }: RequestData) {
         const likeGET = [ Methods.GET, Methods.HEAD ],
             baseURL = Http.filterSlashes(`${this.baseURL}/${slug}`),
-            url: string = likeGET.includes(method) ? `${baseURL}?${ data instanceof FormData ? {} : new URLSearchParams(data).toString()}` : baseURL,
+            url: string = likeGET.includes(method) ? `${baseURL}?${ data instanceof FormData ? '' : new URLSearchParams(data).toString()}` : baseURL,
             requestConfig: { [key: string]: any } = { method, headers: { ...this.headers, ...headers }, ...this.config, ...config };
             if(!likeGET.includes(method)) {
                 const requestData = data instanceof FormData ? data : JSON.stringify(data);
                 requestConfig.body = requestData;
             }
-            console.log(baseURL);
         return new Promise((resolve, reject) => {
             fetch(url, requestConfig).then(async (response) => {
                 const result = await response.json(),
@@ -77,7 +74,6 @@ class Http {
     public put(slug: string = '', config: RequestData = {}) { return this.request(slug, { ...config, method: Methods.PUT }); }
 
     public delete(slug: string = '', config: RequestData = {}) { return this.request(slug, { ...config, method: Methods.DELETE }); }
-
 
     public group(groupPath: string, handler: GroupHandler): { [key: string]: any } {
         const __this = this,

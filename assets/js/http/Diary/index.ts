@@ -5,8 +5,8 @@ class DiaryHTTP extends Http {
         super({ baseURL: 'http://127.0.0.1:8000/diary' });
     }
 
-    public getRecordsList() {
-        return this.get('records');
+    public getRecordsList(data = {}) {
+        return this.get('records', { data });
     }
 
     public get record() {

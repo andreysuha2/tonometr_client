@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { useFetch } from "nuxt/app";
 import type { Ref } from "vue";
-import type { DiaryRecord } from "~/composable/diary";
+import type { DiaryRecord, DiaryPeriod } from "~/composable/diary";
 
 interface Dialog {
     open?: boolean,
@@ -13,6 +13,7 @@ interface Dialog {
 
 interface StateData {
     list: null | Ref,
+    period: DiaryPeriod
     dialog: Dialog
 }
 
@@ -33,6 +34,7 @@ const getDefaultDialog = (): Dialog => ({
 export default defineStore('diary', {
     state: (): StateData => ({ 
         list: null,
+        period: {},
         dialog: getDefaultDialog()
     }),
     actions: {
@@ -50,9 +52,16 @@ export default defineStore('diary', {
             this.dialog.open = state;
         },
         skipDialog() { this.dialog = getDefaultDialog(); },
+        setPeriod(period: DiaryPeriod) {
+            this.period = period;
+        },
+        updatePeriod(period: DiaryPeriod) {
+            this.setPeriod(period);
+            return this.loadRecords();
+        },
         loadRecords() {
             return new Promise(async (resolve, reject) => {
-                const { data, error } = await useFetch('api/diary/records');
+                const { data, error } = await useFetch('api/diary/records', { query: this.period });
                 if(data.value) {
                     this.list = data.value;
                     return resolve(data.value);

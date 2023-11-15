@@ -1,5 +1,10 @@
 import useDiaryStore from "~/store/diary";
 
+export interface DiaryPeriod {
+    year?: number,
+    month?: number
+}
+
 export interface DiaryRecord {
     id?: number,
     pulse: number | null,

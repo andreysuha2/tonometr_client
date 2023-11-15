@@ -4,7 +4,10 @@ import diaryHttp from "~/assets/js/http/Diary";
 
 const router = createRouter();
 
-router.get('/records', defineEventHandler(defaultResponseHandler(async () => await diaryHttp.getRecordsList())));
+router.get('/records', defineEventHandler(defaultResponseHandler(async (event) => {
+    const query = getQuery(event);
+    return await diaryHttp.getRecordsList(query);
+})));
 
 router.post('/record', defineEventHandler(defaultResponseHandler(async (event) => {
     const body = await readBody(event);
