@@ -1,13 +1,17 @@
 <template>
     <header class="app-header">
         <div class="app-header--container base-container">
-            Tonometr
+            <AppLogo/> 
         </div>
     </header>
 </template>
 
 <script lang="ts">
-export default { name: 'AppHeader' };
+import AppLogo from '~/components/AppLogo/index.vue';
+export default { 
+    name: 'AppHeader',
+    components: { AppLogo }
+};
 </script>
 
 <style lang="scss" scoped>

@@ -16,6 +16,7 @@
     // Ширина контейнера
     --container-padding: #{$containerPadding};
     --container-width: #{$containerWidth};
+    --container-full-width: calc(var(--container-width) + var(--container-padding) * 2);
 
     //  Адаптивность и соответствующие ширины контейнера
     // $screen-xs: 0;

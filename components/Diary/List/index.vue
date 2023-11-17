@@ -52,12 +52,6 @@ const props = withDefaults(defineProps<Props>(), { list: () => [] }),
 
 <style lang="scss" scoped>
 .diary {
-    // vars
-    --max-width: 500px;
-    --border: 1px solid #000;
-    --item-gorizontal-paddings: 10px;
-    --item-vertical-paddings: 5px;
-
     // styles
     max-width: var(--max-width);
     width: 100%;

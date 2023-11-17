@@ -13,6 +13,7 @@ interface Dialog {
 
 interface StateData {
     list: null | Ref,
+    listLoaded: boolean,
     period: DiaryPeriod
     dialog: Dialog
 }
@@ -34,6 +35,7 @@ const getDefaultDialog = (): Dialog => ({
 export default defineStore('diary', {
     state: (): StateData => ({ 
         list: null,
+        listLoaded: false,
         period: {},
         dialog: getDefaultDialog()
     }),
@@ -61,7 +63,9 @@ export default defineStore('diary', {
         },
         loadRecords() {
             return new Promise(async (resolve, reject) => {
+                this.listLoaded = true;
                 const { data, error } = await useFetch('api/diary/records', { query: this.period });
+                this.listLoaded = false;
                 if(data.value) {
                     this.list = data.value;
                     return resolve(data.value);

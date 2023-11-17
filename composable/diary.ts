@@ -31,9 +31,11 @@ export const useDiary = () => {
         useRecordDialog = ({ date = null, record = undefined, type = 'create' }: DiaryRecordDialog = {}) => {
             const now = new Date(),
                 usedDate = date ? new Date(date) : now;
-            if(date && type === 'create') {
+            if(type === 'create') {
                 usedDate.setHours(now.getHours());
                 usedDate.setMinutes(now.getMinutes());
+                if(store.period.year) usedDate.setFullYear(store.period.year);
+                if(store.period.month) usedDate.setMonth(store.period.month - 1);
             }
             store.useDialog({
                 title: type === 'create' ? 'Додати запис' : 'Змінити запис',
