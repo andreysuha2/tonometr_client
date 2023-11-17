@@ -7,7 +7,7 @@ interface Dialog {
     open?: boolean,
     title: string,
     date: Date | null,
-    record?: DiaryRecord,
+    record: DiaryRecord,
     type: 'create' | 'update'
 }
 

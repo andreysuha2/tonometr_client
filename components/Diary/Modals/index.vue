@@ -47,6 +47,8 @@
                             <v-text-field
                                 hint="Верхній"
                                 persistent-hint
+                                type="number"
+                                :error-messages="v$.pressure.high.$errors.map(error => String(error.$message))"
                                 prepend-icon="mdi-arrow-top-right" 
                                 v-model="dialog.record.pressure.high" label="Тиск"/>
                         </v-col>
@@ -54,12 +56,18 @@
                             <v-text-field
                                 hint="Нижній"
                                 persistent-hint
+                                type="number"
+                                :error-messages="v$.pressure.lower.$errors.map(error => String(error.$message))"
                                 prepend-icon="mdi-arrow-bottom-right"
                                 v-model="dialog.record.pressure.lower" label="Тиск"/>
                         </v-col>
+                    </v-row>
+                    <v-row>
                         <v-col>
                             <v-text-field
                                 prepend-icon="mdi-pulse"
+                                type="number"
+                                :error-messages="v$.pulse.$errors.map(error => String(error.$message))"
                                 v-model="dialog.record.pulse" label="Пульс"/>
                         </v-col>
                     </v-row>
@@ -110,9 +118,22 @@ export default { name: 'DiaryDialog' };
 <script lang="ts" setup>
 import { useDiary } from '~/composable/diary';
 import type { DiaryRecord } from '~/composable/diary';
+import { useVuelidate } from "@vuelidate/core";
+import { required, integer, maxValue, minValue } from "@vuelidate/validators";
+
+const validationRules = {
+    pulse: { required, integer, maxValue: maxValue(999), minValue: minValue(10) },
+    pressure: {
+        high: { required, integer, maxValue: maxValue(999), minValue: minValue(10) },
+        lower: { required, integer, maxValue: maxValue(999), minValue: (10) }
+    }
+};
 
 const { store, updateDateTime, createRecord, updateRecord, deleteRecord } = useDiary(),
-    onUpdateDialog = (val: boolean) => { if(!val) store.skipDialog() },
+    onUpdateDialog = (val: boolean) => { 
+        v$.value.$reset();
+        if(!val) store.skipDialog()
+     },
     useLoader = ref(false),
     isOpenDate = ref(false),
     { dialog } = storeToRefs(store),
@@ -132,9 +153,10 @@ const { store, updateDateTime, createRecord, updateRecord, deleteRecord } = useD
         },
         set(val: string) { store.dialog.date = updateDateTime(structuredClone(date.value), val); }
     }),
-    withRecord = (handler: (r: DiaryRecord) => Promise<any>) => {
-        const record: DiaryRecord | undefined = dialog.value.record;
-        if(record) {
+    withRecord = async (handler: (r: DiaryRecord) => Promise<any>, validate: boolean = false) => {
+        const record: DiaryRecord | undefined = dialog.value.record,
+            valid = validate ? await v$.value.$validate() : true;
+        if(record && valid) {
             useLoader.value = true;
             return handler(record).then(() => {
                 store.skipDialog();
@@ -143,9 +165,10 @@ const { store, updateDateTime, createRecord, updateRecord, deleteRecord } = useD
             .finally(() => { useLoader.value = false });
         }
     },
-    addRecord = () => withRecord((record) => createRecord(date.value, record)),
-    setRecord = () => withRecord((record) => updateRecord(date.value, record)),
-    removeRecord = () => withRecord((record) => deleteRecord(record));
+    addRecord = () => withRecord((record) => createRecord(date.value, record), true),
+    setRecord = () => withRecord((record) => updateRecord(date.value, record), true),
+    removeRecord = () => withRecord((record) => deleteRecord(record)),
+    v$ = useVuelidate(validationRules, dialog.value.record);
 </script>
 
 <style lang="scss" scoped>
